@@ -1,0 +1,6 @@
+Revision history for Perl extension PhotoGallery.
+
+0.01  Mon Sep  9 21:02:56 2002
+	- original version; created by h2xs 1.21 with options
+		-AX PhotoGallery
+
