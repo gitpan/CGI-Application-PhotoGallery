@@ -1,7 +1,8 @@
 use ExtUtils::MakeMaker;
+
 WriteMakefile(
 	'NAME'         => 'CGI::Application::PhotoGallery',
-	'VERSION_FROM' => 'PhotoGallery.pm',
+	'VERSION_FROM' => 'lib/CGI/Application/PhotoGallery.pm',
 	'PREREQ_PM'    => {
 		'File::Basename'   => 0,
 		'CGI::Application' => 0,

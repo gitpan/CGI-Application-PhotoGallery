@@ -31,15 +31,12 @@ instead.
 
 AUTHOR
 
-Copyright 2002 - 2003, Brian Cassidy (brian@alternation.net).
-
-Questions, bug reports and suggestions can be emailed directly to me
-at brian@alternation.net. I would also suggest subscribing to the
-CGI::Application mailinglist by sending a blank message to
-"cgiapp-subscribe@lists.erlbaum.net".
+Brian Cassidy <bricas@cpan.org>
 
 
-LICENSE
+COPYRIGHT AND LICENSE
+
+Copyright 2005 by Brian Cassidy
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

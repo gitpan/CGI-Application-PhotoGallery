@@ -1,10 +1,12 @@
 Changes
 Makefile.PL
 MANIFEST
-PhotoGallery/GD.pm
-PhotoGallery/Magick.pm
-PhotoGallery/photos_index.tmpl
-PhotoGallery/photos_single.tmpl
-PhotoGallery.pm
+lib/CGI/Application/PhotoGallery/GD.pm
+lib/CGI/Application/PhotoGallery/Magick.pm
+lib/CGI/Application/PhotoGallery/photos_index.tmpl
+lib/CGI/Application/PhotoGallery/photos_single.tmpl
+lib/CGI/Application/PhotoGallery.pm
 README
-test.pl
+t/01-use.t
+t/99-pod.t
+META.yml                                 Module meta-data (added by MakeMaker)
