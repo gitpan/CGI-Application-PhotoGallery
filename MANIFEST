@@ -1,8 +1,10 @@
 Changes
 Makefile.PL
 MANIFEST
+PhotoGallery/GD.pm
+PhotoGallery/Magick.pm
+PhotoGallery/photos_index.tmpl
+PhotoGallery/photos_single.tmpl
 PhotoGallery.pm
-photos_index.tmpl
-photos_single.tmpl
 README
 test.pl

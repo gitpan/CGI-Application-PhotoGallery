@@ -1,178 +1,225 @@
 package CGI::Application::PhotoGallery;
 
-use strict;
-use CGI::Application;
-use File::Basename;
-use GD;
+$VERSION = '0.02';
 
-use vars qw($VERSION @ISA);
-$VERSION = '0.01';
-@ISA = qw(CGI::Application);
+use strict;
+use base 'CGI::Application';
+use File::Basename;
+
+my %headers = (
+	png  => 'image/png',
+	gif  => 'image/gif',
+	jpg  => 'image/jpeg',
+	jpeg => 'image/jpeg'
+);
+
+my %sizes   = (
+	l    => 150,
+	m    => 100,
+	s    => 50
+);
 
 sub setup {
 	my $self = shift;
-	$self->mode_param('r');
+
+	$self->mode_param( 'mode' );
 	$self->run_modes(
-		'0' => 'show_gallery',
-		'1' => 'show_image',
-		'AUTOLOAD' => 'show_gallery'
+		index    => 'gallery_index',
+		thumb    => 'thumbnail',
+		full     => 'show_image',
+		view     => 'single_index',
+		AUTOLOAD => 'gallery_index'
 	);
-	$self->start_mode('0');
+	$self->start_mode( 'index' );
 
 	# setup defaults
-	$self->param('thumb_size' => 'm') unless defined $self->param('thumb_size');
-	$self->param('thumbs_per_row' => 4) unless defined $self->param('thumbs_per_row');
-	$self->param('title' => 'My Photo Gallery') unless defined $self->param('title');
+
+	$self->param( 'thumb_size'     => 'm' ) unless defined $self->param( 'thumb_size' );
+	$self->param( 'thumbs_per_row' => 4 ) unless defined $self->param( 'thumbs_per_row' );
+	$self->param( 'title'          => 'My Photo Gallery' ) unless defined $self->param( 'title' );
+	$self->param( 'graphics_lib'   => 'GD' ) unless defined $self->param( 'graphics_lib' );
+	$self->param( 'extensions'     => [ keys( %headers ) ] ) unless defined $self->param( 'extensions' );
 
 	# check required params
-	die "You must set PARAMS => { photos_dir => '/path/to/photos' } in your PhotoGallery instance script!" unless defined $self->param('photos_dir');
-	die "You must set PARAMS => { script_name => \$0 } in your PhotoGallery instance script!" unless defined $self->param('script_name');
+
+	die "PARAMS => { photos_dir   => '/path/to/photos' } not set in your instance script!" unless defined $self->param( 'photos_dir' );
+	die 'PARAMS => { script_name  => $0 } not set in your instance script!' unless defined $self->param( 'script_name' );
+
+	# fixes $0 for win32
+
+	$self->param( 'script_name' => basename( $self->param( 'script_name' ) ) );
 }
 
-sub show_gallery {
-	my $self = shift;
+sub gallery_index {
+	my $self       = shift;
 
-	my $row_limit = $self->param('thumbs_per_row');
-	my %ok_ext = map { $_ => 1 } qw(jpg gif png);
-	my $image_dir = $self->param('photos_dir');
+	my %extensions = map { $_ => 1 } @{ $self->param( 'extensions' ) };
+	my $row_limit  = $self->param( 'thumbs_per_row');
+	my $image_dir  = $self->param('photos_dir');
 
 	# read the contents of the directory
+
 	my @dir_row;
 	while(my $dir = <$image_dir/*>) {
 		next unless -d $dir;
-		my $dir_row = {dir => substr($dir, length($image_dir) + 1)};
 
-		my ($i, $j) = (0, 0);
-		while (my $full = <$dir/*>) {
-			my ($file, $ext) = (fileparse($full,keys %ok_ext))[0,2];
-			next unless $ok_ext{$ext};
+		my $dir_row       = { dir => substr( $dir, length( $image_dir ) + 1 ) };
+		my ( $row, $col ) = ( 0, 0 );
 
-			push @{$dir_row->{file_row}->[$j]->{images}}, { filename => substr($full, length($self->param('photos_dir'))), alt => $file };
-			$j++ unless ++$i % $row_limit;
+		while ( my $full = <$dir/*> ) {
+			my ( $file, $ext ) = ( fileparse( $full, keys %extensions ) )[ 0, 2 ];
+
+			next unless $extensions{ lc( $ext ) };
+			next if $file =~ /_thumb\.$/;
+
+			push @{ $dir_row->{ file_row }[ $col ]{ images } }, {
+				filename => substr( $full, length( $image_dir ) ),
+				alt      => substr( $file, 0, length( $file ) - 1 )
+			};
+
+			$col++ unless ++$row % $row_limit;
 		}
-		for ($i = $i; $i % $row_limit; $i++) {
-			push @{$dir_row->{file_row}->[$j]->{images}}, { filename => '', alt => '' };
+		while ( $row++ % $row_limit ) {
+			push @{ $dir_row->{ file_row }[ $col ]{ images } }, { filename => '', alt => '' };
 		}
 
 		push @dir_row, $dir_row;
 	}
 
 	# setup index template
-	my $html;
-	if ($self->param('index_template')) {
-		$html = $self->load_tmpl(
-			$self->param('index_template'),
-			global_vars => 1
-		);
-	}
-	else {
-		$html = $self->load_tmpl(
-			'CGI/Application/PhotoGallery/photos_index.tmpl',
-			path => [@INC],
-			global_vars => 1
-		);
-	}
+
+	my $html = $self->load_tmpl(
+		$self->param( 'index_template' ) || ( 'CGI/Application/PhotoGallery/photos_index.tmpl', path => [@INC] ),
+		global_vars       => 1,
+		loop_context_vars => 1
+	);
 
 	$html->param(
-		script_name => $self->param('script_name'),
-		thumb_size => $self->param('thumb_size'),
-		title => $self->param('title'),
-		dir_row => \@dir_row
+		script_name => $self->param( 'script_name' ),
+		title       => $self->param( 'title' ),
+		dir_row     => \@dir_row
 	);
+
 	return $html->output;
 }
 
-sub show_image {
-	my $self = shift;
-	my $q = $self->query();
+sub thumbnail {
+	my $self  = shift;
+	my $query = $self->query();
+	my $dir   = $self->param( 'photos_dir' );
+	my $image = $query->param( 'image' );
+	my $size  = $self->param( 'thumb_size' );
 
-	# load image
-	die "Missing image query argument." unless defined($q->param('i'));
-	my $image = GD::Image->new($self->param('photos_dir') . $q->param('i'));
+	die 'ERROR: Missing image query argument.' unless $image;
 
-	# resize image, if needed
-	my $newimage;
-	if (defined($q->param('l'))) {
-		$newimage = $self->resize_image(150, $image);
+	my( $path, $type ) = $image =~ /(.*)\.([^.]+)/;
+
+	my $thumb  = "$dir$path" . '_thumb.png';
+
+	my $exists = ( -e $thumb ) ? 1 : 0;
+
+	my $data;
+
+	# image not cached, or a newer version needs to be cached
+
+	if ( !$exists or ( $exists and ( stat( $thumb ) )[ 9 ] < ( stat( "$dir$image" ) )[ 9 ] ) ) {
+		# load graphics library
+		my $graphics_lib = $self->param( 'graphics_lib' );
+		require "CGI/Application/PhotoGallery/$graphics_lib.pm";
+		my $gfx_lib = "CGI::Application::PhotoGallery::$graphics_lib"->new;
+
+		$data = $gfx_lib->resize( "$dir$image", $sizes{ $size } );
+
+		open( THUMB, ">$thumb" ) or die "ERROR: Cannot open $thumb: $!";
+		binmode( THUMB );
+		print THUMB $data;
+		close( THUMB );
 	}
-	elsif (defined($q->param('m'))) {
-		$newimage = $self->resize_image(100, $image);
-	}
-	elsif (defined($q->param('s'))) {
-		$newimage = $self->resize_image(50, $image);
-	}
-	elsif (defined($q->param('f'))) {
-		my $type = substr($q->param('i'), length($q->param('i')) - 3);
-		if ($type eq 'jpg') {
-			$self->header_props({-type=>'image/jpeg'});
-			return $image->jpeg;
-		}
-		elsif ($type eq 'png' || $type eq 'gif') {
-			$self->header_props({-type=>'image/png'});
-			return $image->png;
-		}
-	}
+
+	# image was cached
+
 	else {
-		my ($width, $height) = $image->getBounds();
-
-		# setup single photo template
-		my $html;
-		if ($self->param('single_template')) {
-			$html = $self->load_tmpl(
-				$self->param('single_template'),
-				global_vars => 1
-			);
-		}
-		else {
-			$html = $self->load_tmpl(
-				'CGI/Application/PhotoGallery/photos_single.tmpl',
-				path => [@INC],
-				global_vars => 1
-			);
-		}
-
-		$html->param(
-			script_name => $self->param('script_name'),
-			title => $self->param('title') . ' - ' . substr($q->param('i'), 0, length($q->param('i')) - 4),
-			filename => $q->param('i'),
-			alt => $q->param('i'),
-			width => $width,
-			height => $height
-		);
-
-		# get caption, if available
-		my $file = $self->param('photos_dir') . substr($q->param('i'), 0, length($q->param('i')) - 4);
-		open (FH, "<$file.txt");
-		local $/ = undef;
-		$html->param(caption => <FH>);
-		close FH;
-		return $html->output;
+		open( THUMB, $thumb ) or die "ERROR: Cannot open $thumb: $!";
+		binmode( THUMB );
+		local $/;
+		$data = <THUMB>;
+		close( THUMB );
 	}
-	$self->header_props({-type=>'image/png'});
-	return $newimage->png;
+
+	$self->header_props( { -type => 'image/png' } );
+	return $data;
 }
 
-sub resize_image {
-	my ($self, $newsize, $image) = @_;
-	my ($width, $height) = $image->getBounds();
-	my $image2 = new GD::Image($newsize, $newsize);
+sub show_image {
+	my $self  = shift;
+	my $query = $self->query();
+	my $dir   = $self->param( 'photos_dir' );
+	my $image = $query->param( 'image' );
 
-	$image2->transparent($image2->colorAllocate(0,0,0));
+	die 'ERROR: Missing image query argument.' unless $image;
 
-	if ($width > $height) {
-		$image2->copyResized($image, 0, int((($newsize - int(($height * $newsize / $width) + 0.5)) / 2) + 0.5), 0, 0, $newsize, int(($height * $newsize / $width) + 0.5), $width, $height);
-	}
-	elsif ($width < $height) {
-		$image2->copyResized($image, int((($newsize - int(($width * $newsize / $height) + 0.5)) / 2) + 0.5), 0, 0, 0, int(($width * $newsize / $height) + 0.5), $newsize, $width, $height);
-	}
-	else {
-		$image2->copyResized($image, 0, 0, 0, 0, $newsize, $newsize, $width, $height);
+	# load and print image
+
+	local $/;
+	open( IMAGE, "$dir$image" ) or die "ERROR: Cannot open $dir$image: $!";
+	binmode( IMAGE );
+	my $data = <IMAGE>;
+	close( IMAGE );
+
+	my( $path, $type ) = $image =~ /(.*)\.([^.]+)/;
+
+	$self->header_props( { -type => $headers{ lc( $type ) } } );
+	return $data;
+}
+
+sub single_index {
+	my $self  = shift;
+	my $query = $self->query();
+	my $dir   = $self->param( 'photos_dir' );
+	my $image = $query->param( 'image' );
+
+	die 'ERROR: Missing image query argument.' unless $image;
+
+	my( $path, $type ) = $image =~ /(.*)\.([^.]+)/;
+
+	# load graphics library
+
+	my $graphics_lib = $self->param( 'graphics_lib' );
+	require "CGI/Application/PhotoGallery/$graphics_lib.pm";
+	my $gfx_lib = "CGI::Application::PhotoGallery::$graphics_lib"->new;
+
+	my ( $width, $height ) = $gfx_lib->size( "$dir$image" );
+
+	# setup single photo template
+
+	my $html = $self->load_tmpl(
+		$self->param( 'single_template' ) || ( 'CGI/Application/PhotoGallery/photos_single.tmpl', path => [@INC] ),
+		global_vars => 1,
+	);
+
+	$html->param(
+		script_name => $self->param( 'script_name' ),
+		title       => $self->param( 'title' ) . ' - ' . $path,
+		filename    => $query->param( 'image' ),
+		alt         => $query->param( 'image' ),
+		width       => $width,
+		height      => $height
+	);
+
+	# get caption, if available
+
+	if ( -e "$dir$path.txt" ) {
+		local $/;
+		open( CAPTION, "$dir$path.txt" ) or die "ERROR: Cannot open $dir$path.txt: $!";
+		$html->param( caption => <CAPTION> );
+		close CAPTION;
 	}
 
-	return $image2;
+	return $html->output;
 }
 
 1;
+
 __END__
 
 =head1 NAME
@@ -194,7 +241,8 @@ CGI::Application::PhotoGallery - module to provide a simple photo gallery.
 
 CGI::Application::PhotoGallery is a CGI::Application module allowing people
 to create their own simple photo gallery. There is no need to generate your
-own thumbnails since they are created on the fly (using the GD module).
+own thumbnails since they are created on the fly (using either the GD or
+Image::Magick modules).
 
 To use this module you need to create an instance script.  It
 should look like:
@@ -262,8 +310,19 @@ on the index page. You can change this by specifying either C<'s'>
 
 =item * thumbs_per_row
 
-The default number of thumbnails per row on the index page is 4. You
+The default number of thumbnails per row on the index page is C<4>. You
 can change it by specifying your own value in the instance script.
+
+=item * graphics_lib
+
+You can specifify which graphics library you wish to use to size your
+thumbnails. Included in this package are C<Magick> (Image::Magick) and
+the default: C<GD>. You can also create your own if you wish.
+
+=item * extensions
+
+Should you wish, you can also specify the allowable extensions. The
+defaults are: C<png>, C<gif>, C<jpg> and C<jpeg>.
 
 =item * index_template
 
@@ -288,10 +347,14 @@ See L<HTML::Template> for more information about the template syntax.
 
 =head1 AUTHOR
 
-Copyright 2002, Brian Cassidy (brian@alternation.net).
+Copyright 2002 - 2003, Brian Cassidy (brian@alternation.net).
 
 Special thanks to jeffa, vladb, petruchio and jcwren from
 http://www.perlmonks.org for their help.
+
+Thanks also to:
+Mark Stosberg
+Michael Heathman
 
 Questions, bug reports and suggestions can be emailed directly to me
 at brian@alternation.net. I would also suggest subscribing to the

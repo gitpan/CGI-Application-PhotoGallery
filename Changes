@@ -1,5 +1,18 @@
 Revision history for Perl extension PhotoGallery.
 
+0.02  Wed May 14 19:30:23 2003
+
+	Thanks to Mark Stosberg and Michael Heathman for their input
+
+	- Code cleanup
+	- Changed runmode names (full, english names)
+	- thumbnail size no longer specified in URL
+	- You can use either GD or Image::Magick (or you can write
+	  your own interface)
+	- You can specify what extensions to read
+	- Crude thumbnail cache implemented
+	- $0 was doing funky stuff on Win32; it's been fixed
+
 0.01  Mon Sep  9 21:02:56 2002
 	- original version; created by h2xs 1.21 with options
 		-AX PhotoGallery

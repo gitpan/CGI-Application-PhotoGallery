@@ -2,7 +2,8 @@ CGI::Application::PhotoGallery - module to provide a simple photo gallery.
 
 This module is a CGI::Application module allowing people to create their
 own simple photo gallery. There is no need to generate your own
-thumbnails since they are created on the fly (using the GD module).
+own thumbnails since they are created on the fly (using either the GD or
+Image::Magick modules).
 
 
 INSTALLATION
@@ -22,12 +23,15 @@ The module requires the following modules, available on CPAN:
   CGI::Application
   HTML::Template
   File::Basename
-  GD
+
+Also, it requires a graphics library to generate the thumbnails. By default
+CGI::Application::PhotoGallery uses GD, however Image::Magick can be used
+instead.
 
 
 AUTHOR
 
-Copyright 2002, Brian Cassidy (brian@alternation.net).
+Copyright 2002 - 2003, Brian Cassidy (brian@alternation.net).
 
 Questions, bug reports and suggestions can be emailed directly to me
 at brian@alternation.net. I would also suggest subscribing to the
