@@ -1,21 +1,48 @@
 package CGI::Application::PhotoGallery::GD;
 
-$VERSION = '0.01';
+=head1 NAME
+
+CGI::Application::PhotoGallery::GD - GD-based graphics adaptor
+
+=head1 SYNOPSIS
+
+	use CGI::Application::PhotoGallery::GD;
+	
+	my $lib     = CGI::Application::PhotoGallery::GD->new;
+	my $pngdata = $lib->resize( $file, 100 );
+
+=head1 METHODS
+
+=cut
 
 use strict;
 use GD;
 
+our $VERSION = '0.02';
+
+=head2 new( )
+
+creates a new CGI::Application::PhotoGallery::GD object.
+
+=cut
+
 sub new {
-	my( $class ) = shift;
-	my $self     = {};
+	my $class = shift;
+	my $self  = {};
 	bless $self, $class;
 	return $self;
 }
 
+=head2 resize( $file, $size )
+
+Resizes C<$file> to C<$size>xC<$size> with transparent margins.
+
+=cut
+
 sub resize {
-	my $self = shift;
-	my $file = shift;
-	my $size = shift;
+	my $self  = shift;
+	my $file  = shift;
+	my $size  = shift;
 
 	my $image = $self->load( $file );
 
@@ -43,6 +70,12 @@ sub resize {
 	return $image2->png;
 }
 
+=head2 load( $file )
+
+Loads C<$file> and returns a L<GD::Image>.
+
+=cut
+
 sub load {
 	my $self = shift;
 	my $file = shift;
@@ -65,13 +98,44 @@ sub load {
 	return $image;
 }
 
+=head2 size( $file )
+
+Returns the width and height of C<$file>.
+
+=cut
+
 sub size {
-	my $self = shift;
-	my $file = shift;
+	my $self  = shift;
+	my $file  = shift;
 
 	my $image = $self->load( $file );
 
 	return $image->getBounds();
 }
+
+=head1 SEE ALSO
+
+=over 4 
+
+=item * L<GD>
+
+=back
+
+=head1 AUTHOR
+
+=over 4
+
+=item * Brian Cassidy E<lt>bricas@cpan.orgE<gt>
+
+=back
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2005 by Brian Cassidy
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=cut
 
 1;

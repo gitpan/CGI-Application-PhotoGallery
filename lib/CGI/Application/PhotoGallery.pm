@@ -2,7 +2,7 @@ package CGI::Application::PhotoGallery;
 
 =head1 NAME
 
-CGI::Application::PhotoGallery - module to provide a simple photo gallery.
+CGI::Application::PhotoGallery - module to provide a simple photo gallery
 
 =head1 SYNOPSIS
 
@@ -10,8 +10,7 @@ CGI::Application::PhotoGallery - module to provide a simple photo gallery.
 	
 	my $webapp = CGI::Application::PhotoGallery->new(
 		PARAMS => {
-			photos_dir  => '/path/to/photos',
-			script_name => $0
+			photos_dir  => '/path/to/photos'
 		}
         );
 	
@@ -19,7 +18,7 @@ CGI::Application::PhotoGallery - module to provide a simple photo gallery.
 
 =head1 DESCRIPTION
 
-CGI::Application::PhotoGallery is a CGI::Application module allowing people
+CGI::Application::PhotoGallery is a L<CGI::Application> module allowing people
 to create their own simple photo gallery. There is no need to generate your
 own thumbnails since they are created on the fly (using either the GD or
 Image::Magick modules).
@@ -33,16 +32,14 @@ should look like:
 	
 	my $webapp = CGI::Application::PhotoGallery->new(
 		PARAMS => {
-			photos_dir  => '/path/to/photos',
-			script_name => $0
+			photos_dir  => '/path/to/photos'
 		}
         );
 	
 	$webapp->run();
 
 You'll need to replace the "/path/to/photos" with the real path to your
-photos (see the photos_dir options below). There is no need to change
-the "script_name" parameter.
+photos (see the photos_dir options below).
 
 Put this somewhere where CGIs can run and name it something like
 C<index.cgi>.
@@ -50,16 +47,31 @@ C<index.cgi>.
 This gets you the default behavior and look.  To get something more to
 your specifications you can use the options described below.
 
+=head1 INSTALLATION
+
+To install this module via Module::Build:
+
+	perl Build.PL
+	./Build         # or `perl Build`
+	./Build test    # or `perl Build test`
+	./Build install # or `perl Build install`
+
+To install this module via ExtUtils::MakeMaker:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
 =head1 OPTIONS
 
-CGI::Application modules accept options using the PARAMS arguement to
+L<CGI::Application> modules accept options using the PARAMS arguement to
 C<new()>.  To give options for this module you change the C<new()>
 call in the instance script shown above:
 
 	my $webapp = CGI::Application::PhotoGallery->new(
 		PARAMS => {
 			photos_dir  => '/path/to/photos',
-			script_name => $0,
 			title       => 'My Photos'
 		}
 	);
@@ -71,53 +83,19 @@ about C<title> and other options.
 =head2 photos_dir (required)
 
 This parameter is used to specify where all of your photos are
-located. PhotoGallery needs to know this so i can display all of
-your photos.
+located.
 
-NB: Your C<photos_dir> needs to have directories inside of it for
-images to show up! For example:
+Previous limitations of this directory have been lifted.
 
-	/ (root)
-	|
-	+--- path
-	     |
-	     +--- to
-	          |
-	          +--- photos
-	               |
-	               +---- Summer Trip
-	               |     |
-	               |     +--- pic01.jpg
-	               |
-	               +---- Xmas 04
-	                     |
-	                     +--- pic01.jpg
+Your photos directory can have any number of images and sub-directories
+of images. This is applied recursively so a gallery can have any number
+of sub-galleries.
 
-By pointing C<photos_dir> to C</path/to/photos>, you will get 2 sections
-of photos: Summer Trip and Xmas 04, each with one photo. The output will
-look something like this:
+=head2 script_name
 
-	+-------------------------------+
-	|          Summer Trip          |
-	+-------+-------+-------+-------+
-	|       |       |       |       |
-	| pic01 |       |       |       |
-	|       |       |       |       |
-	+-------+-------+-------+-------+
-	
-	+-------------------------------+
-	|             Xmas 04           |
-	+-------+-------+-------+-------+
-	|       |       |       |       |
-	| pic01 |       |       |       |
-	|       |       |       |       |
-	+-------+-------+-------+-------+
-
-
-=head2 script_name (required)
-
-This parameter should stay as C<$0>. It is needed because PhotoGallery
-links to itself and needs to know the name of the instance script.
+This parameter uses C<$0> by default, you can change it (or set it to the
+empty string) if you neeed to. It is needed for creating self referencial
+links.
 
 =head2 title
 
@@ -127,12 +105,13 @@ You can specify your own using the title parameter.
 =head2 thumb_size
 
 By default PhotoGallery displays thumbnail images that are 100 x 100
-on the index page. You can change this by specifying either C<'s'>
-(50 x 50), C<'m'> (100 x 100) or C<'l'> (150 x 150) for this option.
+on the index page. You can change this by specifying a number
+(in pixels) for this option.
 
-=head2 thumbs_per_row
+=head2 preview_thumbs
 
-The default number of thumbnails per row on the index page is C<4>. You
+Before viewing the entire contents of a gallery, you are shown a few
+preview image. The default number of thumbnails is C<4>. You
 can change it by specifying your own value in the instance script.
 
 =head2 graphics_lib
@@ -141,22 +120,16 @@ You can specifify which graphics library you wish to use to size your
 thumbnails. Included in this package are C<Magick> (Image::Magick) and
 the default: C<GD>. You can also create your own if you wish.
 
-=head2 extensions
-
-Should you wish, you can also specify the allowable extensions. The
-defaults are: C<png>, C<gif>, C<jpg> and C<jpeg>.
-
 =head2 index_template
 
-This application uses HTML::Template to generate its HTML pages.  If
+This application uses L<HTML::Template> to generate its HTML pages.  If
 you would like to customize the HTML you can copy the default form
 template and edit it to suite your needs.  The default form template
 is called 'photos_index.tmpl' and you can get it from the distribution
 or from wherever this module ended up in your C<@INC>.  Pass in the
 path to your custom template as the value of this parameter.
 
-See L<HTML::Template|HTML::Template> for more information about the
-template syntax.
+See L<HTML::Template> for more information about the template syntax.
 
 =head2 single_template
 
@@ -166,6 +139,15 @@ wherever this module ended up in your C<@INC>.  Pass in the path to
 your custom template as the value of this parameter.
 
 See L<HTML::Template> for more information about the template syntax.
+
+=head1 CAPTIONS
+
+You can include captions for your photos by creating a tab-separated
+database named C<captions.txt> in your C<photos_dir>. The filename
+should be specified relative of your C<photos_dir>.
+
+	1.jpg	This is a caption.
+	Test Gallery/1.jpg	This is another caption.
 
 =head1 METHODS
 
@@ -177,21 +159,11 @@ use strict;
 use warnings;
 
 use File::Basename;
+use Cache::FileCache;
+use Mime::Types;
+use File::Find::Rule;
 
-my %headers = (
-	png  => 'image/png',
-	gif  => 'image/gif',
-	jpg  => 'image/jpeg',
-	jpeg => 'image/jpeg'
-);
-
-my %sizes   = (
-	l    => 150,
-	m    => 100,
-	s    => 50
-);
-
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head2 setup( )
 
@@ -215,76 +187,145 @@ sub setup {
 
 	# setup defaults
 
-	$self->param( 'thumb_size'     => 'm' ) unless defined $self->param( 'thumb_size' );
-	$self->param( 'thumbs_per_row' => 4 ) unless defined $self->param( 'thumbs_per_row' );
-	$self->param( 'title'          => 'My Photo Gallery' ) unless defined $self->param( 'title' );
-	$self->param( 'graphics_lib'   => 'GD' ) unless defined $self->param( 'graphics_lib' );
-	$self->param( 'extensions'     => [ keys( %headers ) ] ) unless defined $self->param( 'extensions' );
+	$self->param( thumb_size     => 100 ) unless defined $self->param( 'thumb_size' );
+	$self->param( preview_thumbs => 4 ) unless defined $self->param( 'preview_thumbs' );
+	$self->param( title          => 'My Photo Gallery' ) unless defined $self->param( 'title' );
+	$self->param( graphics_lib   => 'GD' ) unless defined $self->param( 'graphics_lib' );
+	$self->param( script_name    => $0 ) unless defined $self->param( 'script_name' );
 
 	# check required params
 
-	die "PARAMS => { photos_dir   => '/path/to/photos' } not set in your instance script!" unless defined $self->param( 'photos_dir' );
-	die 'PARAMS => { script_name  => $0 } not set in your instance script!' unless defined $self->param( 'script_name' );
+	die "PARAMS => { photos_dir => '/path/to/photos' } not set in your instance script!" unless defined $self->param( 'photos_dir' );
 
 	# fixes $0 for win32
 
-	$self->param( 'script_name' => basename( $self->param( 'script_name' ) ) );
+	$self->param( script_name => basename( $self->param( 'script_name' ) ) ) if $self->param( 'script_name' );
 }
+
+=head2 get_photos( $dir )
+
+This method finds all of the C<image/*> files in the specified
+directory.
+
+=cut
+
+sub get_photos {
+	my $self  = shift;
+	my $dir   = shift;
+	my $types = $self->mime_types;
+
+	my @photos = File::Find::Rule->maxdepth( 1 )->file->exec(
+		sub {
+			my $name = pop;
+			return 1 if $types->mimeTypeOf( $name )->mediaType eq 'image'
+		}
+	)->in( $dir );
+
+	return @photos;
+}
+
+=head2 mime_types( )
+
+This method will create (if needed) and return a new L<MIME::Types> object.
+
+=cut
+
+sub mime_types {
+	my $self = shift;
+
+	unless( $self->{ _mime_types } ) {
+		my $types = MIME::Types->new( only_complete => 1 );
+		$types->create_type_index;
+		$self->{ _mime_types } = $types;
+	}
+
+	return $self->{ _mime_types };
+}
+
+=head2 gfx_lib( )
+
+This method will create (if needed) and return the graphics adaptor specified by
+the user (default is GD).
+
+=cut
+
+sub gfx_lib {
+	my $self = shift;
+
+	unless( $self->{ _gfx_lib } ) {
+		my $lib = 'CGI::Application::PhotoGallery::' . $self->param( 'graphics_lib' );
+		eval "require $lib";
+		$self->{ _gfx_lib } = $lib->new;
+	}
+
+	return $self->{ _gfx_lib };
+}
+
+=head2 cache( )
+
+This method will create (if needed) and return a L<Cache::FileCache> object,
+
+=cut
+
+sub cache {
+	my $self = shift;
+
+	unless( $self->{ _cache } ) {
+		$self->{ _cache } = Cache::FileCache->new( { namespace => $self->param( 'title' ) } );
+	}
+
+	return $self->{ _cache };
+
+}
+
+=head1 RUN MODES
 
 =head2 gallery_index( )
 
-Reads in the contents of your C<photos_dir> and generates an index of images.
+Reads in the contents of your C<photos_dir> and generates an index of photos.
 
 =cut
 
 sub gallery_index {
-	my $self       = shift;
+	my $self      = shift;
+	my $types     = $self->mime_types;
 
-	my %extensions = map { $_ => 1 } @{ $self->param( 'extensions' ) };
-	my $row_limit  = $self->param( 'thumbs_per_row');
-	my $image_dir  = $self->param('photos_dir');
+	my $limit     = $self->param( 'preview_thumbs' );
+	my $photo_dir = $self->param( 'photos_dir' );
+	my $user_dir  = $self->query->param( 'dir' ) || '';
+	my $directory = $photo_dir . $user_dir ;
 
-	# read the contents of the directory
+	$directory    =~ s/\.//g;
+	$directory    =~ s/\/$//;
 
-	my @dir_row;
-	while(my $dir = <$image_dir/*>) {
-		next unless -d $dir;
+	my @dirs      = File::Find::Rule->directory->maxdepth( 1 )->in( $directory );
 
-		my $dir_row       = { dir => substr( $dir, length( $image_dir ) + 1 ) };
-		my ( $row, $col ) = ( 0, 0 );
+	my @galleries;
+	for my $dir ( @dirs  ) {
+		my @files = map { s/^$photo_dir//; { filename => $_ }; } $self->get_photos( $dir );
 
-		while ( my $full = <$dir/*> ) {
-			my ( $file, $ext ) = ( fileparse( $full, keys %extensions ) )[ 0, 2 ];
-
-			next unless $extensions{ lc( $ext ) };
-			next if $file =~ /_thumb\.$/;
-
-			push @{ $dir_row->{ file_row }[ $col ]{ images } }, {
-				filename => substr( $full, length( $image_dir ) ),
-				alt      => substr( $file, 0, length( $file ) - 1 )
-			};
-
-			$col++ unless ++$row % $row_limit;
-		}
-		while ( $row++ % $row_limit ) {
-			push @{ $dir_row->{ file_row }[ $col ]{ images } }, { filename => '', alt => '' };
+		if( $dir ne $dirs[ 0 ] ) {
+			@files = @files[ 0..$limit - 1 ] if @files > $limit;
 		}
 
-		push @dir_row, $dir_row;
+		( my $location = $dir ) =~ s/^$photo_dir//;
+		push @galleries, { dir => $location, title => basename( $dir ), photos => \@files } if @files;
 	}
 
-	# setup index template
+	my $current = shift( @galleries ); 
 
 	my $html = $self->load_tmpl(
 		$self->param( 'index_template' ) || ( 'CGI/Application/PhotoGallery/photos_index.tmpl', path => [@INC] ),
+		associate         => $self,
 		global_vars       => 1,
-		loop_context_vars => 1
+		loop_context_vars => 1,
+		die_on_bad_params => 0
 	);
 
 	$html->param(
-		script_name => $self->param( 'script_name' ),
-		title       => $self->param( 'title' ),
-		dir_row     => \@dir_row
+		photos       => $current->{ photos },
+		gallery_name => ( $user_dir ? $current->{ title } : $self->param( 'title' ) ),
+		galleries    => \@galleries
 	);
 
 	return $html->output;
@@ -299,48 +340,44 @@ library.
 
 sub thumbnail {
 	my $self  = shift;
-	my $query = $self->query();
+	my $query = $self->query;
 	my $dir   = $self->param( 'photos_dir' );
-	my $image = $query->param( 'image' );
+	my $photo = $query->param( 'photo' );
 	my $size  = $self->param( 'thumb_size' );
 
-	die 'ERROR: Missing image query argument.' unless $image;
+	die 'ERROR: Missing photo query argument.' unless $photo;
 
-	my( $path, $type ) = $image =~ /(.*)\.([^.]+)/;
-
-	my $thumb  = "$dir$path" . '_thumb.png';
-
-	my $exists = ( -e $thumb ) ? 1 : 0;
+	my $path    = "$dir$photo";
+	my $cache   = $self->cache;
+	my $key     = "$path$size";
+	my $lastmod = ( stat( $path ) )[ 9 ];
 
 	my $data;
+	if( $data = $cache->get( $key ) ) {
+		my $reqmod  = $query->http( 'If-Modified-Since' ) || 0;
 
-	# image not cached, or a newer version needs to be cached
-
-	if ( !$exists or ( $exists and ( stat( $thumb ) )[ 9 ] < ( stat( "$dir$image" ) )[ 9 ] ) ) {
-		# load graphics library
-		my $graphics_lib = $self->param( 'graphics_lib' );
-		require "CGI/Application/PhotoGallery/$graphics_lib.pm";
-		my $gfx_lib = "CGI::Application::PhotoGallery::$graphics_lib"->new;
-
-		$data = $gfx_lib->resize( "$dir$image", $sizes{ $size } );
-
-		open( THUMB, ">$thumb" ) or die "ERROR: Cannot open $thumb: $!";
-		binmode( THUMB );
-		print THUMB $data;
-		close( THUMB );
+		if( $reqmod == $lastmod ) {
+			$self->header_props( { -status => '304 Not Modified' } );
+			return;
+		}
+		else {
+			$data = undef;
+		}
 	}
 
-	# image was cached
-
-	else {
-		open( THUMB, $thumb ) or die "ERROR: Cannot open $thumb: $!";
-		binmode( THUMB );
-		local $/;
-		$data = <THUMB>;
-		close( THUMB );
+	unless( $data ) {
+		my $gfx = $self->gfx_lib;
+		$data   = $gfx->resize( $path, $size );
+		$cache->set( $key => $data );
 	}
 
-	$self->header_props( { -type => 'image/png' } );
+
+	$self->header_props( {
+		-type          => $self->mime_types->mimeTypeOf( $path ),
+		-last_modified => $lastmod
+	} );
+
+	binmode STDOUT;
 	return $data;
 }
 
@@ -352,23 +389,31 @@ Sends the contents of the image to the browser.
 
 sub show_image {
 	my $self  = shift;
-	my $query = $self->query();
+	my $query = $self->query;
 	my $dir   = $self->param( 'photos_dir' );
-	my $image = $query->param( 'image' );
+	my $photo = $query->param( 'photo' );
+	my $path  = "$dir$photo";
 
-	die 'ERROR: Missing image query argument.' unless $image;
+	die 'ERROR: Missing $photo query argument.' unless $photo;
 
-	# load and print image
+	my $lastmod = ( stat( $path ) )[ 9 ];
+	my $reqmod  = $query->http( 'If-Modified-Since' ) || 0;
 
-	local $/;
-	open( IMAGE, "$dir$image" ) or die "ERROR: Cannot open $dir$image: $!";
-	binmode( IMAGE );
-	my $data = <IMAGE>;
-	close( IMAGE );
+	if( $reqmod == $lastmod ) {
+		$self->header_props( { -status => '304 Not Modified' } );
+		return;
+	}
 
-	my( $path, $type ) = $image =~ /(.*)\.([^.]+)/;
+	open( PHOTO, $path ) or die "ERROR: Cannot open $path: $!";
+	binmode PHOTO;
+	my $data = do { local $/; <PHOTO> };
+	close( PHOTO );
 
-	$self->header_props( { -type => $headers{ lc( $type ) } } );
+	$self->header_props( {
+		-type          => $self->mime_types->mimeTypeOf( $path ),
+		-last_modified => $lastmod
+	} );
+
 	return $data;
 }
 
@@ -382,43 +427,40 @@ sub single_index {
 	my $self  = shift;
 	my $query = $self->query();
 	my $dir   = $self->param( 'photos_dir' );
-	my $image = $query->param( 'image' );
+	my $photo = $query->param( 'photo' );
+	my $path  = "$dir$photo";
 
-	die 'ERROR: Missing image query argument.' unless $image;
+	die 'ERROR: Missing photo query argument.' unless $photo;
 
-	my( $path, $type ) = $image =~ /(.*)\.([^.]+)/;
+	my $gfx = $self->gfx_lib;
 
-	# load graphics library
-
-	my $graphics_lib = $self->param( 'graphics_lib' );
-	require "CGI/Application/PhotoGallery/$graphics_lib.pm";
-	my $gfx_lib = "CGI::Application::PhotoGallery::$graphics_lib"->new;
-
-	my ( $width, $height ) = $gfx_lib->size( "$dir$image" );
-
-	# setup single photo template
+	my ( $width, $height ) = $gfx->size( $path );
 
 	my $html = $self->load_tmpl(
 		$self->param( 'single_template' ) || ( 'CGI/Application/PhotoGallery/photos_single.tmpl', path => [@INC] ),
-		global_vars => 1,
+		associate         => $self,
+		global_vars       => 1,
+		die_on_bad_params => 0
+
 	);
 
 	$html->param(
-		script_name => $self->param( 'script_name' ),
-		title       => $self->param( 'title' ) . ' - ' . $path,
-		filename    => $query->param( 'image' ),
-		alt         => $query->param( 'image' ),
-		width       => $width,
-		height      => $height
+		photo  => $photo,
+		width  => $width,
+		height => $height
 	);
 
 	# get caption, if available
-
-	if ( -e "$dir$path.txt" ) {
-		local $/;
-		open( CAPTION, "$dir$path.txt" ) or die "ERROR: Cannot open $dir$path.txt: $!";
-		$html->param( caption => <CAPTION> );
-		close CAPTION;
+	my $caption_path = "$dir/captions.txt";
+	if( -e $caption_path ) {
+		open( CAPTIONS, $caption_path ) or die "ERROR: Cannot open $caption_path: $!";
+		while( my $caption = <CAPTIONS> ) {
+			if( $caption =~ /^\Q$photo\E\t(.+)$/ ) {
+				$html->param( caption => $1 );
+				last;
+			}
+		}
+		close( CAPTIONS );
 	}
 
 	return $html->output;
@@ -428,11 +470,11 @@ sub single_index {
 
 =over 4 
 
-=item * CGI::Application
+=item * L<CGI::Application>
 
-=item * HTML::Template
+=item * L<HTML::Template>
 
-=item * CGI::Application::MailPage
+=item * L<CGI::Application::MailPage>
 
 =back
 

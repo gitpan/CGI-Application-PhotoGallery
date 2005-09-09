@@ -1,12 +1,14 @@
+Build.PL
 Changes
-Makefile.PL
+etc/photos_index.tmpl
+etc/photos_single.tmpl
 MANIFEST
+META.yml
 lib/CGI/Application/PhotoGallery/GD.pm
 lib/CGI/Application/PhotoGallery/Magick.pm
-lib/CGI/Application/PhotoGallery/photos_index.tmpl
-lib/CGI/Application/PhotoGallery/photos_single.tmpl
 lib/CGI/Application/PhotoGallery.pm
-README
 t/01-use.t
+t/98-pod_coverage.t
 t/99-pod.t
-META.yml                                 Module meta-data (added by MakeMaker)
+Makefile.PL
+README
