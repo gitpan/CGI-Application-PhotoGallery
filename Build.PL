@@ -12,7 +12,7 @@ my $build = Module::Build->new(
 		'File::Basename'   => 0,
 		'CGI::Application' => 0,
 		'Cache::FileCache' => 0,
-		'Mime::Types'      => 0,
+		'MIME::Types'      => 0,
 		'File::Find::Rule' => 0
 	},
 	build_requires     => {

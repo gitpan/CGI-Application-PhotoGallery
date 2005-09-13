@@ -160,10 +160,10 @@ use warnings;
 
 use File::Basename;
 use Cache::FileCache;
-use Mime::Types;
+use MIME::Types;
 use File::Find::Rule;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head2 setup( )
 

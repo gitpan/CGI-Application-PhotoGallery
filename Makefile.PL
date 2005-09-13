@@ -9,7 +9,7 @@ WriteMakefile
                            'Cache::FileCache' => '0',
                            'File::Basename' => '0',
                            'File::Find::Rule' => '0',
-                           'Mime::Types' => '0',
+                           'MIME::Types' => '0',
                            'Test::More' => '0'
                          },
           'INSTALLDIRS' => 'site',
