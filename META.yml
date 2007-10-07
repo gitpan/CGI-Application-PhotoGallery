@@ -1,29 +1,25 @@
----
-name: CGI-Application-PhotoGallery
-version: 0.05
-author:
-  - Brian Cassidy <bricas@cpan.org>
+--- 
 abstract: module to provide a simple photo gallery
+author: Brian Cassidy <bricas@cpan.org>
+build_requires: 
+  ExtUtils::MakeMaker: 6.11
+  Test::More: 0
+distribution_type: module
+generated_by: Module::Install version 0.67
 license: perl
-requires:
+meta-spec: 
+  url: http://module-build.sourceforge.net/META-spec-v1.3.html
+  version: 1.3
+name: CGI-Application-PhotoGallery
+no_index: 
+  directory: 
+    - inc
+    - t
+requires: 
   CGI::Application: 0
   Cache::FileCache: 0
   File::Basename: 0
   File::Find::Rule: 0
+  File::ShareDir: 0
   MIME::Types: 0
-recommends:
-  GD: 0
-  Image::Magick: 0
-build_requires:
-  Test::More: 0
-provides:
-  CGI::Application::PhotoGallery:
-    file: lib/CGI/Application/PhotoGallery.pm
-    version: 0.05
-  CGI::Application::PhotoGallery::GD:
-    file: lib/CGI/Application/PhotoGallery/GD.pm
-    version: 0.02
-  CGI::Application::PhotoGallery::Magick:
-    file: lib/CGI/Application/PhotoGallery/Magick.pm
-    version: 0.02
-generated_by: Module::Build version 0.2611
+version: 0.07

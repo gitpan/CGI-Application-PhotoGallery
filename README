@@ -3,15 +3,15 @@ NAME
     gallery
 
 SYNOPSIS
-            use CGI::Application::PhotoGallery;
-        
-            my $webapp = CGI::Application::PhotoGallery->new(
-                    PARAMS => {
-                            photos_dir  => '/path/to/photos'
-                    }
+        use CGI::Application::PhotoGallery;
+    
+        my $webapp = CGI::Application::PhotoGallery->new(
+            PARAMS => {
+                photos_dir  => '/path/to/photos'
+            }
             );
-        
-            $webapp->run();
+    
+        $webapp->run();
 
 DESCRIPTION
     CGI::Application::PhotoGallery is a CGI::Application module allowing
@@ -22,17 +22,17 @@ DESCRIPTION
     To use this module you need to create an instance script. It should look
     like:
 
-            #!/usr/bin/perl
-        
-            use CGI::Application::PhotoGallery;
-        
-            my $webapp = CGI::Application::PhotoGallery->new(
-                    PARAMS => {
-                            photos_dir  => '/path/to/photos'
-                    }
+        #!/usr/bin/perl
+    
+        use CGI::Application::PhotoGallery;
+    
+        my $webapp = CGI::Application::PhotoGallery->new(
+            PARAMS => {
+                photos_dir  => '/path/to/photos'
+            }
             );
-        
-            $webapp->run();
+    
+        $webapp->run();
 
     You'll need to replace the "/path/to/photos" with the real path to your
     photos (see the photos_dir options below).
@@ -44,31 +44,22 @@ DESCRIPTION
     your specifications you can use the options described below.
 
 INSTALLATION
-    To install this module via Module::Build:
-
-            perl Build.PL
-            ./Build         # or `perl Build`
-            ./Build test    # or `perl Build test`
-            ./Build install # or `perl Build install`
-
-    To install this module via ExtUtils::MakeMaker:
-
-            perl Makefile.PL
-            make
-            make test
-            make install
+        perl Makefile.PL
+        make
+        make test
+        make install
 
 OPTIONS
     CGI::Application modules accept options using the PARAMS arguement to
     "new()". To give options for this module you change the "new()" call in
     the instance script shown above:
 
-            my $webapp = CGI::Application::PhotoGallery->new(
-                    PARAMS => {
-                            photos_dir  => '/path/to/photos',
-                            title       => 'My Photos'
-                    }
-            );
+        my $webapp = CGI::Application::PhotoGallery->new(
+            PARAMS => {
+                photos_dir  => '/path/to/photos',
+                title       => 'My Photos'
+            }
+        );
 
     The "title" option tells PhotoGallery to use 'My Photos' as the title
     rather than the default value. See below for more information about
@@ -130,8 +121,8 @@ CAPTIONS
     database named "captions.txt" in your "photos_dir". The filename should
     be specified relative of your "photos_dir".
 
-            1.jpg   This is a caption.
-            Test Gallery/1.jpg      This is another caption.
+        1.jpg   This is a caption.
+        Test Gallery/1.jpg  This is another caption.
 
 METHODS
   setup( )
@@ -173,7 +164,7 @@ SEE ALSO
     * CGI::Application::MailPage
 
 AUTHOR
-    * Brian Cassidy <bricas@cpan.org>
+    Brian Cassidy <bricas@cpan.org>
 
 COPYRIGHT AND LICENSE
     Copyright 2005 by Brian Cassidy
