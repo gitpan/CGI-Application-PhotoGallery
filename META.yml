@@ -23,4 +23,4 @@ requires:
   File::Find::Rule: 0
   File::ShareDir: 0
   MIME::Types: 0
-version: 0.08
+version: 0.09

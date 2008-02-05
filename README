@@ -9,7 +9,7 @@ SYNOPSIS
             PARAMS => {
                 photos_dir  => '/path/to/photos'
             }
-            );
+        );
     
         $webapp->run();
 
@@ -30,7 +30,7 @@ DESCRIPTION
             PARAMS => {
                 photos_dir  => '/path/to/photos'
             }
-            );
+        );
     
         $webapp->run();
 
@@ -115,6 +115,12 @@ OPTIONS
     custom template as the value of this parameter.
 
     See HTML::Template for more information about the template syntax.
+
+  max_width
+    Setting this value will force the browser to scale images down to this
+    particular width and proportioned height. This is done by setting the
+    width and height attributes on the image tag, thus saving the image will
+    retain the full resolution.
 
 CAPTIONS
     You can include captions for your photos by creating a tab-separated
