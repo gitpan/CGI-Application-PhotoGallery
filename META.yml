@@ -22,5 +22,6 @@ requires:
   File::Basename: 0
   File::Find::Rule: 0
   File::ShareDir: 0
+  HTTP::Date: 0
   MIME::Types: 0
-version: 0.09
+version: 0.10
