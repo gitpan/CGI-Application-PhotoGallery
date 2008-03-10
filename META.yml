@@ -17,11 +17,11 @@ no_index:
     - inc
     - t
 requires: 
-  CGI::Application: 0
+  CGI::Application: 4.0
   Cache::FileCache: 0
   File::Basename: 0
   File::Find::Rule: 0
   File::ShareDir: 0
   HTTP::Date: 0
   MIME::Types: 0
-version: 0.11
+version: 0.12

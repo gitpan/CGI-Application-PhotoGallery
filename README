@@ -164,6 +164,9 @@ RUN MODES
   single_index( )
     Fills and sends the template for viewing an individual image.
 
+  handle_error( )
+    Renders a template for any failed action.
+
 SEE ALSO
     * CGI::Application
     * HTML::Template
