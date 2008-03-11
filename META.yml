@@ -24,4 +24,4 @@ requires:
   File::ShareDir: 0
   HTTP::Date: 0
   MIME::Types: 0
-version: 0.12
+version: 0.13
