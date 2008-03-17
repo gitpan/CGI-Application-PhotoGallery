@@ -122,6 +122,27 @@ OPTIONS
     width and height attributes on the image tag, thus saving the image will
     retain the full resolution.
 
+  cache_root
+    Specifies where the file cache data will be stored. Defaults to
+    FileCache under the OS-specific temporary filesdirectory (e.g.
+    /tmp/FileCache). You may want to move this to make the cache persist.
+    Under selinux, however, be careful to put it in a webserver-writable
+    directory.
+
+  cache_namespace
+    Specifies the namespace for this gallery's cache data. Defaults to the
+    gallery title - or 'default'. Changing this will orphan the cache data.
+
+  cache_dirumask
+    Specifies the umask value to use when cache directories are created.
+    Defaults to 0007 to avoid cache poisioning attacks.
+
+  cache_datumask
+    Specifies the umask value to use when cache data is written. Defaults to
+    006 to avoid cache poisioning attacks. Note that this becomes the umask
+    for all files written by this script. (See Cache::FileCache
+    documentation for why.)
+
 CAPTIONS
     You can include captions for your photos by creating a tab-separated
     database named "captions.txt" in your "photos_dir". The filename should
