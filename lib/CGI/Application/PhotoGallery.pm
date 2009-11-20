@@ -138,6 +138,13 @@ particular width and proportioned height. This is done by setting the width
 and height attributes on the image tag, thus saving the image will retain the
 full resolution.
 
+=head2 max_height
+
+Setting this value will force the browser to scale images down to this
+particular height and proportioned width. This is done by setting the width
+and height attributes on the image tag, thus saving the image will retain the
+full resolution.
+
 =head2 cache_root
 
 Specifies where the file cache data will be stored.  Defaults to FileCache
@@ -186,7 +193,7 @@ use File::Find::Rule;
 use File::ShareDir;
 use HTTP::Date ();
 
-our $VERSION = '0.14';
+our $VERSION = '0.15';
 
 =head2 setup( )
 
@@ -580,7 +587,9 @@ sub single_index {
 
     my $gfx = $self->gfx_lib;
 
-    my ( $width, $height ) = $gfx->size( $path );
+    my ( $width, $height ) = eval { $gfx->size( $path ); };
+
+    die "Unable to determine size of $path; file may be corrupt.\nError string: $@" if $@;
 
     # get data for prev/next/parent links
     my ( undef, $search_dir ) = fileparse( $path );
@@ -612,6 +621,14 @@ sub single_index {
     if ( defined( my $max_width = $self->param( 'max_width' ) ) ) {
         if ( $width > $max_width ) {
             my $scale = $max_width / $width;
+            $width  = int( $width * $scale );
+            $height = int( $height * $scale );
+        }
+    }
+
+    if ( defined( my $max_height = $self->param( 'max_height' ) ) ) {
+        if ( $height > $max_height ) {
+            my $scale = $max_height / $height;
             $width  = int( $width * $scale );
             $height = int( $height * $scale );
         }
@@ -667,6 +684,9 @@ sub handle_error {
         $error = 'ERROR: File not found.';
     }
     else {
+        # log non-404 errors
+        warn $error;
+        $error =~ s{\n}{<br/>}g;
         $self->header_props( { -status => '500 Error' } );
     }
 
@@ -700,7 +720,7 @@ Brian Cassidy E<lt>bricas@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008 by Brian Cassidy
+Copyright 2003-2009 by Brian Cassidy
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

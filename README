@@ -122,6 +122,12 @@ OPTIONS
     width and height attributes on the image tag, thus saving the image will
     retain the full resolution.
 
+  max_height
+    Setting this value will force the browser to scale images down to this
+    particular height and proportioned width. This is done by setting the
+    width and height attributes on the image tag, thus saving the image will
+    retain the full resolution.
+
   cache_root
     Specifies where the file cache data will be stored. Defaults to
     FileCache under the OS-specific temporary filesdirectory (e.g.
@@ -189,15 +195,17 @@ RUN MODES
     Renders a template for any failed action.
 
 SEE ALSO
-    * CGI::Application
-    * HTML::Template
-    * CGI::Application::MailPage
+    *   CGI::Application
+
+    *   HTML::Template
+
+    *   CGI::Application::MailPage
 
 AUTHOR
     Brian Cassidy <bricas@cpan.org>
 
 COPYRIGHT AND LICENSE
-    Copyright 2008 by Brian Cassidy
+    Copyright 2003-2009 by Brian Cassidy
 
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
